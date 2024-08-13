@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+env/
+.venv/
+.vscode/
+# IDE specific files
+.idea/
+*.iml
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+# Temporary files
+*.swp
+*~
+.DS_Store
+# Other generated files
+node_modules/
+build/
+dist/
+logs/

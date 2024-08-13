@@ -1,0 +1,84 @@
+.container {
+    margin-top: 20px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: space-between;
+    justify-content: space-between;
+
+
+    .title {
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    main {
+        flex: 1
+    }
+}
+
+.productInformation,
+.imageContainer {
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 10px;
+
+    .fieldset {
+        padding: 10px 0;
+        width: 45%;
+
+        .fieldsetHeader {
+            display: flex;
+            justify-content: space-between;
+
+        }
+
+        label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .input {
+            width: 100%;
+            margin-top: 10px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+    }
+}
+
+.imageContainer {
+    label {
+        margin-bottom: 10px;
+    }
+}
+
+.actionAdd {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    height: 100px;
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    left: 30px;
+
+    .btnAdd {
+        float: right;
+        background-color: #1976d2;
+        color: white;
+    }
+}
+
+.error {
+    font-size: 12px;
+    padding: 3px 10px;
+    font-weight: bold;
+    border-radius: 7px;
+    background-color: rgb(251, 175, 175);
+    color: red
+}

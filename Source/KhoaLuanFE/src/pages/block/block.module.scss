@@ -1,0 +1,22 @@
+.block{
+   
+    padding: 20px 0;
+    .blockHeader{
+        margin-bottom: 10px;
+    }
+}
+.blockHeader{
+    .title{
+        .text{
+            font-size: 25px;
+            color: #06bfe2
+        }
+    }
+}
+.content{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+}

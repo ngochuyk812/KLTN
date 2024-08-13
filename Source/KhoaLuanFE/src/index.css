@@ -1,0 +1,122 @@
+* {
+  --color-admin: white;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  text-transform: capitalize;
+  --color-title: #1976d2;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+.container {
+  position: relative;
+}
+svg {
+  width: 20px;
+  height: 20px;
+}
+.fl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.icon {
+  line-height: 100%;
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  background-color: #d9d9d9;
+  margin: 10px 0;
+}
+
+.container {
+  padding: 40px;
+  width: 90vw;
+}
+
+.fieldset {
+  padding: 10px 0;
+  width: 45%;
+}
+.fieldset label {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+}
+.fieldset .input {
+  width: 100%;
+  margin-top: 10px;
+  height: 40px;
+  border-radius: 8px;
+}
+.icon-back,
+.icon-plus {
+  margin-right: 5px;
+}
+.MuiDataGrid-root .MuiDataGrid-columnHeader:focus {
+  outline: none;
+}
+.modal .ant-modal-title {
+  font-size: 25px;
+}
+
+.ant-modal-title,
+.title {
+  color: var(--color-title) !important;
+}
+/* animation */
+
+@keyframes rotate180 {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+.reactEasyCrop_CropArea {
+  width: 100% !important;
+  height: 100% !important;
+}
+.backgroundOverLay {
+  position: fixed;
+  background-color: rgba(235, 235, 235, 0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+}
+.show_loading .backgroundOverLay {
+  opacity: 1;
+  visibility: visible;
+}
+.show_loading .backgroundOverLay .isLoading:after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 6px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  border-top-color: #3498db;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}

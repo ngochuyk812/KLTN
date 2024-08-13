@@ -1,0 +1,79 @@
+.templateAdmin {
+    .bodyContentWrapper {
+        display: flex;
+        flex-direction: row;
+
+        .content {
+            flex: 1;
+        }
+    }
+}
+
+// sidebar
+
+.bodyContentWrapper {
+    .sidebar {
+        width: 20%;
+        height: 100vh;
+        background-color: black;
+        padding: 10px;
+    }
+}
+
+.sidebarHeader {
+    padding: 30px 15px;
+
+    .logo {
+        width: 90px;
+    }
+}
+
+// content
+.bodyContentWrapper {
+    .content {
+        background-color: black;
+        height: 100vh;
+        display: flex;
+
+
+        .container {
+            width: 90%;
+            padding: 24px;
+            background-color: white;
+            height: 90%;
+            margin: auto;
+            border-radius: 16px;
+            position: relative;
+
+        }
+    }
+}
+
+.header {
+    .breadcrumb {
+        padding: 10px 0;
+
+        .wrapper {
+            gap: 5px;
+        }
+    }
+
+    >.wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.headerRight {
+    button {
+        font-weight: 550;
+        display: flex;
+        align-items: center;
+
+        span {
+            margin-top: 1px;
+        }
+    }
+}
