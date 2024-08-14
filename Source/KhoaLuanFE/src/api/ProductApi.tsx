@@ -6,7 +6,7 @@ const ProductApi = createApi({
   reducerPath: "productApi",
   baseQuery: axiosBaseQuery,
   endpoints: (builder) => ({
-    product: builder.query({
+    product: builder.query<any, void>({
       query: () => ({
         url: `/product`,
         method: "GET",

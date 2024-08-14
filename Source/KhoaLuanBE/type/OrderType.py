@@ -28,7 +28,7 @@ class OrderResponse(BaseModel):
     address: str
     phone_number: str
     email: str
-    order_date: datetime
+    order_date: datetime  # Expecting a datetime object
     total: int
 
 

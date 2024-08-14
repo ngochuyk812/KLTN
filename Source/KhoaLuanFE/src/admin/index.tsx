@@ -15,6 +15,7 @@ import { PageAdmin } from "../interface";
 import { Button } from "@mui/material";
 import ProductCreation from "./page/productCreation";
 import OrderPage from "./page/order";
+import { Link } from "react-router-dom";
 const cx = classNames.bind(styles);
 const pages = [
   {
@@ -74,18 +75,20 @@ export default function AdminPage() {
       <div className={cx("bodyContentWrapper")}>
         <div className={cx("sidebar")}>
           <div className={cx("sidebarHeader")}>
-            <img
-              className={cx("logo")}
-              src="https://lotru.devias.io/assets/logo.svg"
-              alt=""
-            />
+            <Link to="/">
+              <img
+                className={cx("logo")}
+                src="https://lotru.devias.io/assets/logo.svg"
+                alt=""
+              />
+            </Link>
           </div>
           <div className={cx("tabs")}>
             <div className="tabs-wrapper">
               {pages.map((item, index) => {
                 return (
                   <TabAd
-                    haveChild={item.children?.length}
+                    haveChild={!!item.children?.length}
                     tabActivated={parentTabActivated}
                     onClick={handleTabActivated}
                     key={index}
@@ -97,6 +100,7 @@ export default function AdminPage() {
                       item.children.map((itemChild, childIndex) => {
                         return (
                           <TabAd
+                            haveChild={!!item.children?.length}
                             tabActivated={tabActivated}
                             onClick={handleTabActivated}
                             key={childIndex}

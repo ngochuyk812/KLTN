@@ -6,12 +6,24 @@ from database import database
 from type.OrderType import OrderRequest, ExpandOrderDetailResponse
 from type.ProductType import ProductOrderResponse
 from .OrderDetailDao import createOrderDetail
+from datetime import datetime, date
 
 
 async def getAllOrders():
     query = order_table.select()
     results = await database.fetch_all(query=query)
-    return [dict(result) for result in results]
+
+    orders = []
+    for result in results:
+        order_dict = dict(result)
+
+        # Convert order_date to datetime if it's a datetime.date
+        if isinstance(order_dict['order_date'], date):
+            order_dict['order_date'] = datetime.combine(order_dict['order_date'], datetime.min.time())
+
+        orders.append(order_dict)
+
+    return orders
 
 
 async def createOrder(order: OrderRequest):

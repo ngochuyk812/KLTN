@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
 import { useDispatch, useSelector } from "react-redux";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,8 +25,12 @@ import { setProduct } from "../../../slice/productSlice";
 
 const cx = classNames.bind(styles);
 
-type FileType = Parameters<UploadProps["beforeUpload"]>[0];
+type FileType = UploadProps["beforeUpload"] extends (...args: any) => any
+  ? Parameters<UploadProps["beforeUpload"]>[0]
+  : never;
+
 let isChecked: boolean = false;
+
 export default function ProductPage() {
   const dispatch = useDispatch();
   const { data, isLoading, isSuccess } = useProductQuery();
@@ -38,6 +42,7 @@ export default function ProductPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+
   useEffect(() => {
     if (isSuccess && data && !isChecked) {
       dispatch(setProduct(data));
@@ -49,7 +54,7 @@ export default function ProductPage() {
     try {
       const result = await deleteProduct(id);
       if (result.data) {
-        dispatch(setProduct(products.filter((row) => row.id !== id)));
+        dispatch(setProduct(products.filter((row: any) => row.id !== id)));
         Modal.success({
           content: "Deleted successfully",
         });
@@ -65,13 +70,13 @@ export default function ProductPage() {
       });
     }
   };
+
   useEffect(() => {
-    console.log(1);
     console.log("product", products);
   }, [products]);
 
   const handleEdit = (id: number) => {
-    const product = products.find((row) => row.id === id);
+    const product = products.find((row: any) => row.id === id);
     if (product) {
       setModalData(product);
       setIsModalVisible(true);
@@ -110,6 +115,7 @@ export default function ProductPage() {
         image: response.data.url,
         price: modalData.price,
         product_name: modalData.product_name,
+        label_id: modalData.label_id,
       });
 
       if (updateIsError) {
@@ -118,10 +124,11 @@ export default function ProductPage() {
         });
       } else {
         resetForm();
-        const newRows = products.map((item) => {
+        const newRows = products.map((item: any) => {
           if (item.id === modalData.id) {
             return {
               ...result.data,
+              label_id: modalData.label_id, // Cập nhật label_id
             };
           }
           return item;
@@ -227,6 +234,17 @@ export default function ProductPage() {
         ]}
       >
         <div className={cx("modalContent", "fl")}>
+          <div className={cx("fieldset")}>
+            <label htmlFor="labelId">Label ID</label>
+            <Input
+              className="input"
+              id="labelId"
+              value={modalData && modalData.label_id}
+              onChange={(e) => {
+                setModalData({ ...modalData, label_id: e.target.value });
+              }}
+            />
+          </div>
           <div className={cx("fieldset")}>
             <label htmlFor="productPrice">Product Price</label>
             <InputNumber

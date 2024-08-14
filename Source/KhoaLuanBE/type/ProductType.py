@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 
 class ProductRequest(BaseModel):
+    label_id: int
     image: str
     price: int
     product_name: str

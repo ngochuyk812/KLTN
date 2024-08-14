@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from type.ProductType import ProductResponse
 from service.PredictService import PredictService
 
 from type.PredictType import PredictRequest

@@ -21,6 +21,10 @@
         }
     }
 
+    &.parent-activated {
+        background-color: var(--color-title);
+    }
+
 }
 
 .wrapper {

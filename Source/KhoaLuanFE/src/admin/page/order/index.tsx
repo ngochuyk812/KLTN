@@ -1,5 +1,4 @@
 import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
-import EditIcon from "@mui/icons-material/Edit";
 import styles from "./orderAd.module.scss";
 import classNames from "classnames/bind";
 import {
@@ -11,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 const cx = classNames.bind(styles);
 export default function OrderPage() {
-  const { data } = useGetOrdersQuery();
+  const { data } = useGetOrdersQuery(undefined);
   const [dataPopup, setDataPopup] = useState();
   const [getOrderDetail, { data: dataOrderDetail }] =
     useGetOrderDetailMutation();

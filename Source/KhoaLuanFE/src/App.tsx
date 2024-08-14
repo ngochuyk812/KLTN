@@ -3,7 +3,7 @@ import { privateRoute, publicRoute } from "./routes";
 function App() {
   return (
     <>
-      <div className="backgroundOverLay ">
+      <div className="backgroundOverLay">
         <div className="isLoading"></div>
       </div>
       <Routes>

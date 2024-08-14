@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
 import { Button, Image, Input, Select } from "antd";
 import { usePredictMutation } from "../../api/PredictApi";
@@ -22,19 +22,18 @@ import { useCreateOrderMutation } from "../../api/OrderApi";
 const cx = classNames.bind(styles);
 const initialRows: GridRowsProp = [];
 export default function PredictPage() {
-  const webcamRef = useRef(null);
+  const webcamRef = useRef<Webcam>(null);
   const captureRef = useRef<HTMLDivElement>(null);
   const [cameraDevices, setCameraDevices] = useState<ICamera[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>("");
   const [scanImage, setScanImage] = useState<string>("");
-  const [predict, { isLoading, data, error }] = usePredictMutation();
+  const [predict, { data }] = usePredictMutation();
   const [createOrder] = useCreateOrderMutation();
 
   const formatterCurrency = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   });
-  const [pageSize, setPageSize] = useState<number>(5);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -162,12 +161,18 @@ export default function PredictPage() {
   }, []);
 
   const captureScreenshot = async () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setScanImage(imageSrc);
-    predict(imageSrc);
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      if (imageSrc) {
+        setScanImage(imageSrc);
+        predict(imageSrc);
+      } else {
+        console.error("Screenshot could not be captured.");
+      }
+    }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
 
     setFormData({
@@ -260,9 +265,9 @@ export default function PredictPage() {
 
         <div
           className="main-predict"
-          style={{ display: "flex", gap: "10px", alignItems: "center" }}
+          style={{ display: "flex", gap: "100px", alignItems: "center" }}
         >
-          <div className={cx("cameraWrapper", "fl")} style={{ flex: 1 }}>
+          <div className={cx("cameraWrapper", "fl")}>
             <div className={cx("cameraTop", "fl")}>
               <div
                 style={{
@@ -300,14 +305,7 @@ export default function PredictPage() {
           </div>
           <div className={cx("productWrapper")} style={{ flex: 1 }}>
             <Block title="List Product">
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                pageSize={pageSize}
-                rowsPerPageOptions={[2, 5, 7]}
-                pagination
-                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-              />
+              <DataGrid rows={rows} columns={columns} pagination />
             </Block>
 
             <div className={cx("OrderInformationWrapper")}>

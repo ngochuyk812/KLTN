@@ -18,6 +18,7 @@ async def delProductById(id) -> bool:
 
 async def createProduct(product: ProductRequest):
     query = insert(product_table).values(
+        label_id=product.label_id,
         image=product.image,
         price=product.price,
         product_name=product.product_name
@@ -30,6 +31,7 @@ async def createProduct(product: ProductRequest):
     product_id = await database.fetch_val(last_id_query)
     return {
         "id": product_id,
+        "label_id": product.label_id,
         "image": product.image,
         "price": product.price,
         "product_name": product.product_name
