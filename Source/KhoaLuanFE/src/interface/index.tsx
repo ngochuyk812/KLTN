@@ -17,12 +17,14 @@ export interface ProductCreation {
   image: string;
   price: Number;
   product_name: string;
+  label_id: Number;
 }
 export interface ProductUpdate {
   id: Number;
   image: string;
   price: Number;
   product_name: string;
+  label_id: Number;
 }
 
 export interface Product {

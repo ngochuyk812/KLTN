@@ -1,5 +1,4 @@
 import { DataGrid, GridColDef, GridActionsCellItem } from "@mui/x-data-grid";
-import EditIcon from "@mui/icons-material/Edit";
 import styles from "./orderAd.module.scss";
 import classNames from "classnames/bind";
 import {
@@ -11,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 const cx = classNames.bind(styles);
 export default function OrderPage() {
-  const { data } = useGetOrdersQuery();
+  const { data } = useGetOrdersQuery(undefined);
   const [dataPopup, setDataPopup] = useState();
   const [getOrderDetail, { data: dataOrderDetail }] =
     useGetOrderDetailMutation();
@@ -65,8 +64,8 @@ export default function OrderPage() {
     },
   ];
   const columnsPopup: GridColDef[] = [
-    { field: "id", headerName: "Order ID", flex: 0.4 },
-    { field: "product_name", headerName: "Product Name", flex: 1 },
+    { field: "id", headerName: "Order ID", flex: 1 },
+    { field: "product_name", headerName: "Product Name", flex: 2 },
     {
       field: "image",
       headerName: "Image",
@@ -107,6 +106,7 @@ export default function OrderPage() {
           columns={columnsPopup}
           pageSizeOptions={[1, 2]}
         />
+        <p>Total Price: {dataPopup.total}</p>
       </Modal>
     </div>
   );

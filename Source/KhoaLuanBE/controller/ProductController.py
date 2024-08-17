@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
 from service.ProductService import ProductService
 from type.ProductType import ProductRequest, ProductResponse
 
 product_router = APIRouter()
 product_service = ProductService()
 
-@product_router.get("/", response_model=List[ProductResponse])
+@product_router.get("/")
 async def get_products():
     products = await product_service.getProducts()
+    print("products",products)
     return products
 
 @product_router.post("/", response_model=ProductResponse)

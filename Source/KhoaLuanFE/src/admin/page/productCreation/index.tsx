@@ -23,16 +23,16 @@ export default function ProductCreation() {
   const products = useSelector((state: any) => state.product.products);
   const dispatch = useDispatch();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [createProduct, { isError, isLoading: isLoadingCreation }] =
-    useCreateProductMutation();
-  const [isLoading, setIsLoading] = useState(false);
+  const [createProduct, { isError }] = useCreateProductMutation();
 
   const [product, setProduct] = useState({
+    label_id: 0,
     price: 10,
     product_name: "",
   });
 
   const [errors, setErrors] = useState({
+    label_id: "", // Thêm trường lỗi cho label_id
     price: "",
     product_name: "",
   });
@@ -58,10 +58,13 @@ export default function ProductCreation() {
 
   const validateFields = () => {
     const newErrors = {
+      label_id: "",
       price: "",
       product_name: "",
     };
 
+    if (product.label_id < 0)
+      newErrors.label_id = "Label ID must be greater than 0.";
     if (product.price <= 0) newErrors.price = "must be greater than 0.";
     if (!product.product_name) newErrors.product_name = "required";
 
@@ -71,11 +74,13 @@ export default function ProductCreation() {
 
   const resetForm = () => {
     setProduct({
+      label_id: 0,
       price: 10,
       product_name: "",
     });
     setFileList([]);
     setErrors({
+      label_id: "",
       price: "",
       product_name: "",
     });
@@ -85,12 +90,22 @@ export default function ProductCreation() {
     if (!validateFields()) {
       return;
     }
+    const isChecked = products.filter((item: any) => {
+      return item.label_id == product.label_id;
+    });
+    if (isChecked.length) {
+      Modal.error({
+        content: "Label Id đã tồn tại",
+      });
+      document.body.classList.remove("show_loading");
+      return;
+    }
 
     if (fileList.length === 0) {
       alert("Please select a file to upload");
       return;
     }
-
+    document.body.classList.add("show_loading");
     const file = fileList[0].originFileObj as FileType;
     const formData = new FormData();
     formData.append("file", file);
@@ -98,7 +113,6 @@ export default function ProductCreation() {
     formData.append("cloud_name", "dvgjegefi");
 
     try {
-      setIsLoading(true);
       const response = await axios.post(
         "https://api.cloudinary.com/v1_1/dvgjegefi/image/upload",
         formData
@@ -107,6 +121,7 @@ export default function ProductCreation() {
         image: response.data.url,
         price: product.price,
         product_name: product.product_name,
+        label_id: product.label_id,
       });
       const newRows = [...products, result.data];
 
@@ -117,7 +132,6 @@ export default function ProductCreation() {
       } else {
         resetForm();
         console.log("newRows", newRows);
-
         dispatch(setProductAction(newRows));
         Modal.success({
           content: "Created successfully",
@@ -126,21 +140,35 @@ export default function ProductCreation() {
     } catch (error) {
       console.error("Error uploading image:", error);
     } finally {
-      setIsLoading(false);
     }
   };
+
   useEffect(() => {
     console.log("product", products);
   }, [products]);
+
   return (
-    <div
-      className={cx("container", {
-        isLoading: isLoading,
-      })}
-    >
+    <div className={cx("container")}>
       <div className="main">
         <h4 className={cx("title")}>Information</h4>
         <div className={cx("productInformation", "fl")}>
+          <div className={cx("fieldset")}>
+            <div className={cx("fieldsetHeader")}>
+              <label htmlFor="">Label ID</label>
+              {errors.label_id && (
+                <span className={cx("error")}>{errors.label_id}</span>
+              )}
+            </div>
+            <InputNumber
+              value={product.label_id}
+              className={cx("input")}
+              min={0}
+              onChange={(value) =>
+                setProduct({ ...product, label_id: value ?? 0 })
+              }
+            />
+          </div>
+
           <div className={cx("fieldset")}>
             <div className={cx("fieldsetHeader")}>
               <label htmlFor="">Product Name</label>
@@ -156,6 +184,7 @@ export default function ProductCreation() {
               }
             />
           </div>
+
           <div className={cx("fieldset")}>
             <div className={cx("fieldsetHeader")}>
               <label htmlFor="">Product Price</label>
@@ -164,41 +193,43 @@ export default function ProductCreation() {
               )}
             </div>
             <InputNumber
-              value={product && product.price}
+              value={product.price}
               className={cx("input")}
               min={1}
               max={1000000000000}
               defaultValue={10}
-              onChange={(value) => setProduct({ ...product, price: value })}
+              onChange={(value) =>
+                setProduct({ ...product, price: value ?? 1 })
+              }
             />
           </div>
         </div>
+
         <div className="line"></div>
+
         <div className={cx("imageContainer")}>
           <h4 className={cx("title")}>Image Upload</h4>
           <div className={cx("fieldset")}>
             <label htmlFor="">Upload Image</label>
-            <ImgCrop className={cx("fieldset")} rotationSlider>
-              <Upload
-                listType="picture-card"
-                fileList={fileList}
-                onChange={onChange}
-                onPreview={onPreview}
-                beforeUpload={() => false}
-              >
-                {fileList.length < 1 && "+ Upload"}
-              </Upload>
-            </ImgCrop>
+            <div className={cx("fieldset")}>
+              <ImgCrop rotationSlider>
+                <Upload
+                  listType="picture-card"
+                  fileList={fileList}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                  beforeUpload={() => false}
+                >
+                  {fileList.length < 1 && "+ Upload"}
+                </Upload>
+              </ImgCrop>
+            </div>
           </div>
         </div>
       </div>
       <div className={cx("actionAdd")}>
         <div className="line"></div>
-        <Button
-          className={cx("btnAdd")}
-          onClick={handleUpload}
-          variant="contained"
-        >
+        <Button className={cx("btnAdd")} onClick={handleUpload} type="primary">
           Publish
         </Button>
       </div>

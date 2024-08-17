@@ -10,11 +10,7 @@ interface TabAdProps {
   onClick: (item: any, callback: any) => void;
   isParentElement?: boolean;
   tabActivated: string;
-  callback: (
-    event: React.MouseEvent<HTMLDivElement>,
-    item: any,
-    callback: any
-  ) => void;
+  callback: any;
   haveChild: boolean;
 }
 
@@ -36,10 +32,12 @@ const TabAd: React.FC<TabAdProps> = ({
       <div
         className={cx("tabContent", {
           "is-activated": tabActivated === item.tabName && !isParentElement,
+          "parent-activated":
+            tabActivated === item.tabName && isParentElement && !children,
         })}
         data-name={item.tabName}
         data-type={isParentElement ? "parent" : "children"}
-        onClick={(e) => {
+        onClick={() => {
           onClick(item, callback);
         }}
       >

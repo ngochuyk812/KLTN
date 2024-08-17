@@ -1,11 +1,8 @@
-from model.ProductModel import ProductModel
+from type.ProductType import ProductResponse
 import base64
 from io import BytesIO
 from PIL import Image
 import numpy as np
-import os
-from pathlib import Path
-import tensorflow as tf 
 from service.ModelInterfaceService import ModelInference
 from dao.ProductDao import  get_products_by_label_id
 def decode_base64_to_image(base64_string):
@@ -38,11 +35,11 @@ class PredictService:
         self.model_inference = ModelInference()
 
     
-    async def predict(self, image: str) -> ProductModel:
+    async def predict(self, image: str) -> ProductResponse:
         image = decode_base64_to_image(image)
         label = self.model_inference.predict(image )
         print(label)
         product = await get_products_by_label_id(label)
         if not product:
             return None
-        return ProductModel(**product)
+        return ProductResponse(**product)

@@ -4,9 +4,9 @@ from dao.ProductDao import getAllProduct, createProduct, updateProductById, delP
 from type.ProductType import ProductResponse, ProductRequest
 
 class ProductService:
-    async def getProducts(self) -> List[ProductModel]:
+    async def getProducts(self) -> List[ProductResponse]:
         products = await getAllProduct()
-        return [ProductModel(**product) for product in products]
+        return [ProductResponse(**product) for product in products]
     async def createProduct(self, product: ProductRequest) -> ProductResponse:
         created_product = await createProduct(product)
         return ProductResponse(**created_product)
