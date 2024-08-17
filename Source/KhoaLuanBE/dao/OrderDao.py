@@ -10,7 +10,7 @@ from datetime import datetime, date
 
 
 async def getAllOrders():
-    query = order_table.select()
+    query = select(order_table).order_by(order_table.c.order_date.desc())
     results = await database.fetch_all(query=query)
 
     orders = []
