@@ -187,7 +187,10 @@ export default function ProductCreation() {
 
           <div className={cx("fieldset")}>
             <div className={cx("fieldsetHeader")}>
-              <label htmlFor="">Product Price</label>
+              <label htmlFor="">
+                Product Price
+                <span style={{ textTransform: "lowercase" }}>(đ)</span>
+              </label>
               {errors.price && (
                 <span className={cx("error")}>{errors.price}</span>
               )}

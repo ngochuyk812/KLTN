@@ -7,6 +7,7 @@ from type.OrderType import OrderRequest, ExpandOrderDetailResponse
 from type.ProductType import ProductOrderResponse
 from .OrderDetailDao import createOrderDetail
 from datetime import datetime, date
+from type.OrderType import OrderResponse,ExpandOrderResponse
 
 
 async def getAllOrders():
@@ -26,7 +27,8 @@ async def getAllOrders():
     return orders
 
 
-async def createOrder(order: OrderRequest):
+async def createOrder(
+        order: OrderRequest) -> OrderResponse:  # Change to OrderResponse if that's the intended return type
     query = insert(order_table).values(
         customer_name=order.customer_name,
         address=order.address,
@@ -36,25 +38,25 @@ async def createOrder(order: OrderRequest):
         total=order.total
     )
     await database.execute(query=query)
+
     last_id_query = "SELECT LAST_INSERT_ID()"
     order_id = await database.fetch_val(last_id_query)
 
-    # Create order details and collect their responses
     order_details_response = []
     for detail in order.order_details:
-        order_detail_response = await createOrderDetail(order_id, detail.product_id, detail.quantity)
+        order_detail_response = await createOrderDetail(order_id, detail.product_id, detail.quantity,detail.product_name,detail.image,detail.price)
         order_details_response.append(order_detail_response)
 
-    order_response = {
-        "id": order_id,
-        "customer_name": order.customer_name,
-        "address": order.address,
-        "phone_number": order.phone_number,
-        "email": order.email,
-        "order_date": order.order_date,
-        "total": order.total,
-        "order_details": order_details_response
-    }
+    order_response = ExpandOrderResponse(
+        id=order_id,
+        customer_name=order.customer_name,
+        address=order.address,
+        phone_number=order.phone_number,
+        email=order.email,
+        order_date=order.order_date,
+        total=order.total,
+        order_details=order_details_response
+    )
 
     return order_response
 

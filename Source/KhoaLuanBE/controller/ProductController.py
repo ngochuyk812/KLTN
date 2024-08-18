@@ -8,7 +8,6 @@ product_service = ProductService()
 @product_router.get("/")
 async def get_products():
     products = await product_service.getProducts()
-    print("products",products)
     return products
 
 @product_router.post("/", response_model=ProductResponse)

@@ -124,3 +124,9 @@ svg {
 .container {
   position: unset !important;
 }
+.ant-modal-title {
+  font-size: 30px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin-bottom: 40px !important;
+}

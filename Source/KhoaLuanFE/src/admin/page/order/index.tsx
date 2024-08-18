@@ -9,21 +9,28 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 const cx = classNames.bind(styles);
-export default function OrderPage({refetchOrder}:{refetchOrder: number}) {
+export default function OrderPage({ refetchOrder }: { refetchOrder: number }) {
   const { data, refetch } = useGetOrdersQuery(undefined);
   const [dataPopup, setDataPopup] = useState();
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 5,
+    page: 0,
+  });
   const [getOrderDetail, { data: dataOrderDetail }] =
     useGetOrderDetailMutation();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleExpand = (id: any) => {
     getOrderDetail(id);
     setIsModalVisible(true);
-    console.log("data", data);
   };
 
   const handleModalCancel = useCallback(() => {
     setIsModalVisible(false);
   }, []);
+  const formatterCurrency = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
   useEffect(() => {
     if (dataOrderDetail) {
       const result = dataOrderDetail.map((item: any) => {
@@ -31,11 +38,13 @@ export default function OrderPage({refetchOrder}:{refetchOrder: number}) {
           id: item.product_id,
           quantity: item.quantity,
           ...item.product,
-
         };
       });
-      const totalCost = result.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-      setDataPopup({result , total : totalCost});
+      const totalCost = result.reduce(
+        (sum: any, item: any) => sum + item.ntity * item.price,
+        0
+      );
+      setDataPopup({ result, total: totalCost });
     }
   }, [dataOrderDetail]);
 
@@ -54,7 +63,12 @@ export default function OrderPage({refetchOrder}:{refetchOrder: number}) {
     { field: "phone_number", headerName: "Phone Number", flex: 1 },
     { field: "email", headerName: "email", flex: 1 },
     { field: "order_date", headerName: "Date", flex: 1 },
-    { field: "total", headerName: "Total", flex: 1 },
+    {
+      field: "total",
+      headerName: "Total",
+      flex: 1,
+      renderCell: (params: any) => formatterCurrency.format(params.value),
+    },
     {
       field: "actions",
       headerName: "Actions",
@@ -90,13 +104,29 @@ export default function OrderPage({refetchOrder}:{refetchOrder: number}) {
         />
       ),
     },
-    { field: "price", headerName: "Price", flex: 1 },
+    {
+      field: "price",
+      headerName: "Product Price",
+      flex: 1,
+      renderCell: (params) => {
+        const formattedPrice = formatterCurrency.format(params.value);
+        return <span>{formattedPrice}</span>;
+      },
+    },
     { field: "quantity", headerName: "Quantity", flex: 1 },
   ];
 
   return (
-    <div  style={{ height: 500, width: "100%" }}>
-      <DataGrid rows={data} columns={columns} pageSizeOptions={[1, 2]} />
+    <div style={{ height: 500, width: "100%" }}>
+      <DataGrid
+        rows={data}
+        columns={columns}
+        pagination
+        paginationMode="server"
+        paginationModel={paginationModel}
+        pageSizeOptions={[5, 10, 20]}
+        onPaginationModelChange={(newModel) => setPaginationModel(newModel)}
+      />
       <Modal
         className={cx("modal")}
         title="Order Detail"
@@ -109,9 +139,14 @@ export default function OrderPage({refetchOrder}:{refetchOrder: number}) {
         ]}
       >
         <DataGrid
-          rows={dataPopup?.result}
+          rows={dataPopup?.result || []}
           columns={columnsPopup}
-          pageSizeOptions={[1, 2]}
+          pagination
+          paginationMode="server"
+          paginationModel={paginationModel}
+          onPaginationModelChange={(newModel) => setPaginationModel(newModel)}
+          pageSizeOptions={[5, 10, 20]}
+          rowCount={dataPopup?.total || 0}
         />
         <p>Total Price: {dataPopup?.total}</p>
       </Modal>

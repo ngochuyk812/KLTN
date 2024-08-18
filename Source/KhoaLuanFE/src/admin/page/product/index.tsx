@@ -42,7 +42,10 @@ export default function ProductPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-
+  const formatterCurrency = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
   useEffect(() => {
     if (isSuccess && data && !isChecked) {
       dispatch(setProduct(data));
@@ -51,24 +54,33 @@ export default function ProductPage() {
   }, [isSuccess, data, dispatch]);
 
   const handleDelete = async (id: number) => {
-    try {
-      const result = await deleteProduct(id);
-      if (result.data) {
-        dispatch(setProduct(products.filter((row: any) => row.id !== id)));
-        Modal.success({
-          content: "Deleted successfully",
-        });
-      } else {
-        Modal.error({
-          content: "Delete failed",
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      Modal.error({
-        content: "Failed to delete product",
-      });
-    }
+    Modal.confirm({
+      title: "Are you sure you want to delete this product?",
+      content: "Once deleted, the product cannot be recovered.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          const result = await deleteProduct(id);
+          if (result.data) {
+            dispatch(setProduct(products.filter((row: any) => row.id !== id)));
+            Modal.success({
+              content: "Deleted successfully",
+            });
+          } else {
+            Modal.error({
+              content: "Delete failed",
+            });
+          }
+        } catch (error) {
+          console.error("Error deleting product:", error);
+          Modal.error({
+            content: "Failed to delete product",
+          });
+        }
+      },
+    });
   };
 
   useEffect(() => {
@@ -166,7 +178,15 @@ export default function ProductPage() {
       ),
     },
     { field: "product_name", headerName: "Label Name", flex: 3 },
-    { field: "price", headerName: "Product Price", flex: 1 },
+    {
+      field: "price",
+      headerName: "Product Price",
+      flex: 1,
+      renderCell: (params) => {
+        const formattedPrice = formatterCurrency.format(params.value);
+        return <span>{formattedPrice}</span>;
+      },
+    },
     {
       field: "actions",
       headerName: "Actions",
@@ -213,7 +233,7 @@ export default function ProductPage() {
         isLoading: isLoading,
         backgroundOverLay: isLoading,
       })}
-      style={{ height: 500, width: "100%" }}
+      style={{ height: 500, width: "90%" }}
     >
       <DataGrid rows={products} columns={columns} pageSizeOptions={[1, 2]} />
       <Modal
@@ -246,7 +266,10 @@ export default function ProductPage() {
             />
           </div>
           <div className={cx("fieldset")}>
-            <label htmlFor="productPrice">Product Price</label>
+            <label htmlFor="productPrice">
+              Product Price
+              <span style={{ textTransform: "lowercase" }}>(đ)</span>
+            </label>
             <InputNumber
               className="input"
               id="productPrice"

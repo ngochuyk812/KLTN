@@ -1,11 +1,13 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
-import { Button, Image, Input, Select } from "antd";
+import { Button, Image, Input, Modal, Select } from "antd";
 import { usePredictMutation } from "../../api/PredictApi";
 import { ICamera, ProductPredict } from "../../interface";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 // css
+import "react-toastify/dist/ReactToastify.css";
 import styles from "./predict.module.scss";
 import classNames from "classnames/bind";
 import {
@@ -22,6 +24,7 @@ import { useCreateOrderMutation } from "../../api/OrderApi";
 import OrderPage from "../../admin/page/order";
 const cx = classNames.bind(styles);
 const initialRows: GridRowsProp = [];
+
 export default function PredictPage() {
   const webcamRef = useRef<Webcam>(null);
   const captureRef = useRef<HTMLDivElement>(null);
@@ -46,9 +49,69 @@ export default function PredictPage() {
   const [rows, setRows] = useState(initialRows);
   const [visible, setVisible] = useState(false);
   const [imagePreview, setImagePreview] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const handleDelete = (id: number) => {
     setRows((prevRows) => prevRows.filter((row) => row.id !== id));
   };
+  const generatePDF = useCallback((orderData: any) => {
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    doc.setFontSize(30);
+    doc.text("Invoice", 105, 20, { align: "center" });
+
+    doc.setFontSize(12);
+    const pageWidth = 210;
+    const margin = 20;
+    const labelX = margin;
+    const valueX = pageWidth - margin;
+
+    doc.text("Customer Name:", labelX, 30);
+    doc.text(orderData.customer_name, valueX, 30, { align: "right" });
+
+    doc.text("Address:", labelX, 40);
+    doc.text(orderData.address, valueX, 40, { align: "right" });
+
+    doc.text("Phone Number:", labelX, 50);
+    doc.text(orderData.phone_number, valueX, 50, { align: "right" });
+
+    doc.text("Email:", labelX, 60);
+    doc.text(orderData.email, valueX, 60, { align: "right" });
+
+    doc.text("Order Date:", labelX, 70);
+    doc.text(new Date(orderData.order_date).toLocaleDateString(), valueX, 70, {
+      align: "right",
+    });
+
+    const orderDetails = orderData.order_details.map((detail: any) => [
+      detail.product_name,
+      detail.quantity,
+      `${detail.price} d`, // Using the Unicode character for the Vietnamese dong symbol
+      `${detail.quantity * detail.price} d`,
+    ]);
+
+    doc.autoTable({
+      head: [["Product Name", "Quantity", "Price", "Total"]],
+      body: orderDetails,
+      startY: 80,
+    });
+
+    doc.text(
+      `Total: ${orderData.total} d`,
+      pageWidth - margin,
+      (doc as any).autoTable.previous.finalY + 10,
+      { align: "right" }
+    );
+
+    const pdfBlob = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    setPdfUrl(pdfUrl);
+    setIsModalVisible(true);
+  }, []);
 
   const previewProduct = (image: string) => {
     setImagePreview(image);
@@ -186,7 +249,7 @@ export default function PredictPage() {
     setSelectedDeviceId(value);
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (rows.length === 0) {
       toast.error("Chưa có sản phẩm để thanh toán");
       return;
@@ -206,6 +269,9 @@ export default function PredictPage() {
       return {
         product_id: item.id,
         quantity: item.quantity,
+        price: item.price,
+        product_name: item.product_name,
+        image: item.image,
       };
     });
     const total = rows.reduce((prev, item) => {
@@ -220,9 +286,14 @@ export default function PredictPage() {
       total: total,
       order_details: listProduct,
     };
-    createOrder(data);
-    console.log(new Date().getTime());
-    setRefetchOrder(new Date().getTime())
+    const orderData = await createOrder(data);
+
+    generatePDF(orderData.data);
+    setRefetchOrder(new Date().getTime());
+  };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setPdfUrl(null);
   };
   const resetForm = useCallback(() => {
     setRows([]);
@@ -237,6 +308,21 @@ export default function PredictPage() {
   return (
     <div>
       <Header />
+      <Modal
+        title="Invoice"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        width="1000px"
+      >
+        {pdfUrl && (
+          <iframe
+            src={`${pdfUrl}#zoom=112%`}
+            style={{ width: "100%", height: "70vh" }}
+            frameBorder="0"
+          />
+        )}
+      </Modal>
       <div className={cx("container")}>
         <ToastContainer
           position="top-right"
@@ -384,7 +470,7 @@ export default function PredictPage() {
           </div>
         </div>
         <Block title="Orders">
-          <OrderPage refetchOrder = {refetchOrder}/>
+          <OrderPage refetchOrder={refetchOrder} />
         </Block>
       </div>
     </div>

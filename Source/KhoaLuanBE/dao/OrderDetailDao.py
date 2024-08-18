@@ -2,7 +2,7 @@ from sqlalchemy import insert
 from entity.OrderDetailEntity import order_detail_table
 from database import database
 
-async def createOrderDetail(order_id: int, product_id: int, quantity: int):
+async def createOrderDetail(order_id: int, product_id: int, quantity: int,product_name:str,image:str,price:int):
     query = insert(order_detail_table).values(
         order_id=order_id,
         product_id=product_id,
@@ -16,5 +16,8 @@ async def createOrderDetail(order_id: int, product_id: int, quantity: int):
     return {
         "id": order_detail_id,
         "product_id": product_id,
-        "quantity": quantity
+        "quantity": quantity,
+        "image":image,
+        "price":price,
+        "product_name":product_name
     }

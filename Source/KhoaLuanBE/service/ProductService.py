@@ -1,5 +1,4 @@
 from typing import List
-from model.ProductModel import ProductModel
 from dao.ProductDao import getAllProduct, createProduct, updateProductById, delProductById, get_products_by_label_id
 from type.ProductType import ProductResponse, ProductRequest
 
