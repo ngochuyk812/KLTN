@@ -8,7 +8,7 @@ const publicRoute: Array<IRoute> = [
   {
     path: "/",
     element: PredictPage,
-  },
+  }
 ];
 const privateRoute: Array<IRoute> = [
   {
