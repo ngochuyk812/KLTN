@@ -9,8 +9,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 const cx = classNames.bind(styles);
-export default function OrderPage() {
-  const { data } = useGetOrdersQuery(undefined);
+export default function OrderPage({refetchOrder}:{refetchOrder: number}) {
+  const { data, refetch } = useGetOrdersQuery(undefined);
   const [dataPopup, setDataPopup] = useState();
   const [getOrderDetail, { data: dataOrderDetail }] =
     useGetOrderDetailMutation();
@@ -20,6 +20,7 @@ export default function OrderPage() {
     setIsModalVisible(true);
     console.log("data", data);
   };
+
   const handleModalCancel = useCallback(() => {
     setIsModalVisible(false);
   }, []);
@@ -30,11 +31,17 @@ export default function OrderPage() {
           id: item.product_id,
           quantity: item.quantity,
           ...item.product,
+
         };
       });
-      setDataPopup(result);
+      const totalCost = result.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+      setDataPopup({result , total : totalCost});
     }
   }, [dataOrderDetail]);
+
+  useEffect(() => {
+    refetch();
+  }, [refetchOrder]);
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "Order ID", flex: 0.4 },
@@ -64,8 +71,8 @@ export default function OrderPage() {
     },
   ];
   const columnsPopup: GridColDef[] = [
-    { field: "id", headerName: "Order ID", flex: 0.4 },
-    { field: "product_name", headerName: "Product Name", flex: 1 },
+    { field: "id", headerName: "Order ID", flex: 1 },
+    { field: "product_name", headerName: "Product Name", flex: 2 },
     {
       field: "image",
       headerName: "Image",
@@ -88,7 +95,7 @@ export default function OrderPage() {
   ];
 
   return (
-    <div className={cx("container")} style={{ height: 500, width: "100%" }}>
+    <div  style={{ height: 500, width: "100%" }}>
       <DataGrid rows={data} columns={columns} pageSizeOptions={[1, 2]} />
       <Modal
         className={cx("modal")}
@@ -102,10 +109,11 @@ export default function OrderPage() {
         ]}
       >
         <DataGrid
-          rows={dataPopup}
+          rows={dataPopup?.result}
           columns={columnsPopup}
           pageSizeOptions={[1, 2]}
         />
+        <p>Total Price: {dataPopup?.total}</p>
       </Modal>
     </div>
   );

@@ -10,10 +10,6 @@ class ProductService:
         products = await getAllProduct()
         return [ProductModel(**product) for product in products]
 
-    async def getProducts(self) -> List[ProductModel]:
-        products = await getAllProduct()
-        return [ProductModel(**product) for product in products]
-
     async def createProduct(self, product: ProductRequest) -> ProductResponse:
         created_product = await createProduct(product)
         return ProductResponse(**created_product)

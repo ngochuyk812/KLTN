@@ -43,7 +43,7 @@ class ModelInference:
             current_file = Path(__file__).resolve()
             base_dir = current_file.parent.parent  # Đây là thư mục gốc của dự án
             # Đường dẫn tới file model_checkpoint.h5
-            model_path = base_dir / "static" / "vit_model"
+            model_path = base_dir / "static" / "vit_model_v2"
             try:
                 cls._instance.model = tf.keras.models.load_model(model_path)
                 print("Model loaded successfully.")

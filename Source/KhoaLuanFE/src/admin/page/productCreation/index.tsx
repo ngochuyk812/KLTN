@@ -63,7 +63,7 @@ export default function ProductCreation() {
       product_name: "",
     };
 
-    if (product.label_id <= 0)
+    if (product.label_id < 0)
       newErrors.label_id = "Label ID must be greater than 0.";
     if (product.price <= 0) newErrors.price = "must be greater than 0.";
     if (!product.product_name) newErrors.product_name = "required";
@@ -162,7 +162,7 @@ export default function ProductCreation() {
             <InputNumber
               value={product.label_id}
               className={cx("input")}
-              min={1}
+              min={0}
               onChange={(value) =>
                 setProduct({ ...product, label_id: value ?? 0 })
               }

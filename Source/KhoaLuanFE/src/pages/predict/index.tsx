@@ -19,6 +19,7 @@ import Block from "../block";
 import { ShoppingCartOutlined } from "@mui/icons-material";
 import Header from "../../component/header";
 import { useCreateOrderMutation } from "../../api/OrderApi";
+import OrderPage from "../../admin/page/order";
 const cx = classNames.bind(styles);
 const initialRows: GridRowsProp = [];
 export default function PredictPage() {
@@ -40,6 +41,7 @@ export default function PredictPage() {
     phone: "",
     address: "",
   });
+  const [refetchOrder, setRefetchOrder] = useState(0);
 
   const [rows, setRows] = useState(initialRows);
   const [visible, setVisible] = useState(false);
@@ -53,8 +55,7 @@ export default function PredictPage() {
     setVisible(true);
   };
   const columns: GridColDef[] = [
-    { field: "id", headerName: "#", width: 50 },
-    { field: "label_id", headerName: "Label Id", width: 100 },
+    { field: "id", headerName: "#", width: 1 },
     { field: "product_name", headerName: "Product Name", width: 150 },
     {
       field: "image_scan",
@@ -220,6 +221,8 @@ export default function PredictPage() {
       order_details: listProduct,
     };
     createOrder(data);
+    console.log(new Date().getTime());
+    setRefetchOrder(new Date().getTime())
   };
   const resetForm = useCallback(() => {
     setRows([]);
@@ -380,6 +383,9 @@ export default function PredictPage() {
             </Button>
           </div>
         </div>
+        <Block title="Orders">
+          <OrderPage refetchOrder = {refetchOrder}/>
+        </Block>
       </div>
     </div>
   );
