@@ -122,10 +122,7 @@ export default function OrderPage({ refetchOrder }: { refetchOrder: number }) {
         rows={data}
         columns={columns}
         pagination
-        paginationMode="server"
-        paginationModel={paginationModel}
         pageSizeOptions={[5, 10, 20]}
-        onPaginationModelChange={(newModel) => setPaginationModel(newModel)}
       />
       <Modal
         className={cx("modal")}
@@ -142,9 +139,6 @@ export default function OrderPage({ refetchOrder }: { refetchOrder: number }) {
           rows={dataPopup?.result || []}
           columns={columnsPopup}
           pagination
-          paginationMode="server"
-          paginationModel={paginationModel}
-          onPaginationModelChange={(newModel) => setPaginationModel(newModel)}
           pageSizeOptions={[5, 10, 20]}
           rowCount={dataPopup?.total || 0}
         />
