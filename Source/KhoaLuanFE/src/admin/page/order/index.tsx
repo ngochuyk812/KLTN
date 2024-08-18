@@ -12,10 +12,6 @@ const cx = classNames.bind(styles);
 export default function OrderPage({ refetchOrder }: { refetchOrder: number }) {
   const { data, refetch } = useGetOrdersQuery(undefined);
   const [dataPopup, setDataPopup] = useState();
-  const [paginationModel, setPaginationModel] = useState({
-    pageSize: 5,
-    page: 0,
-  });
   const [getOrderDetail, { data: dataOrderDetail }] =
     useGetOrderDetailMutation();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,10 +37,10 @@ export default function OrderPage({ refetchOrder }: { refetchOrder: number }) {
         };
       });
       const totalCost = result.reduce(
-        (sum: any, item: any) => sum + item.ntity * item.price,
+        (sum: any, item: any) => sum + item.quantity * item.price,
         0
       );
-      setDataPopup({ result, total: totalCost });
+      setDataPopup({ result, total: formatterCurrency.format(totalCost) });
     }
   }, [dataOrderDetail]);
 

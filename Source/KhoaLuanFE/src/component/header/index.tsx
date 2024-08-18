@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./header.module.scss";
 import classNames from "classnames/bind";
-import { Button, Modal, Space } from "antd";
 const cx = classNames.bind(styles);
 export default function Header() {
   return (
