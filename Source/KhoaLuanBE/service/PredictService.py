@@ -5,29 +5,39 @@ from PIL import Image
 import numpy as np
 from service.ModelInterfaceService import ModelInference
 from dao.ProductDao import  get_products_by_label_id
+
+def has_significant_pixel_changes(image, threshold=50, sample_rate=5):
+    image = np.array(image)
+    if image.ndim == 3:
+        image = np.mean(image, axis=2).astype(np.uint8) 
+
+    for i in range(0, image.shape[0] - 1, sample_rate):
+        for j in range(0, image.shape[1] - 1, sample_rate):
+            if abs(int(image[i, j]) - int(image[i + 1, j])) >= threshold or \
+               abs(int(image[i, j]) - int(image[i, j + 1])) >= threshold:
+                return True
+    return False
+
 def decode_base64_to_image(base64_string):
     try:
-        # Xóa bỏ phần mở rộng (ví dụ: 'data:image/jpeg;base64,')
         base64_string = base64_string.split(",")[-1]
-        # Thêm vào padding '=' nếu cần thiết
         missing_padding = len(base64_string) % 4
         if missing_padding != 0:
             base64_string += '=' * (4 - missing_padding)
-        # Giải mã base64
         image_data = base64.b64decode(base64_string)
-        # Đọc ảnh từ BytesIO
         image = Image.open(BytesIO(image_data))
         image = image.resize((64, 64))
-        # Convert image to RGB if it has an alpha channel
+       
         if image.mode == 'RGBA':
             image = image.convert('RGB')
-        # Chuyển đổi thành mảng numpy và chuẩn hóa giá trị pixel
+
+        if(has_significant_pixel_changes(image) == False):
+            return None
         image_array = np.array(image).astype('float32') / 255.0
         return image_array
     except Exception as e:
         print(f"Error decoding base64: {e}")
         return None
-        
 
 class PredictService:
     def __init__(self):
@@ -37,6 +47,8 @@ class PredictService:
     
     async def predict(self, image: str) -> ProductResponse:
         image = decode_base64_to_image(image)
+        if image is None or image.size == 0:
+            return None
         label = self.model_inference.predict(image )
         print(label)
         product = await get_products_by_label_id(label)
