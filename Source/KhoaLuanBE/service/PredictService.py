@@ -41,7 +41,6 @@ def decode_base64_to_image(base64_string):
 
 class PredictService:
     def __init__(self):
-        self.test = "haha"
         self.model_inference = ModelInference()
 
     

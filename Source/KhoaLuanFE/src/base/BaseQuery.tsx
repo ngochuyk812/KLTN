@@ -34,7 +34,7 @@ export const axiosBaseQuery: BaseQueryFn<
     document.body.classList.remove("show_loading");
 
     if (method !== "GET") {
-      toast.error(err.message);
+      toast.error(err.response?.data?.detail ?? err.message);
     }
 
     return {

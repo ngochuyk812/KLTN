@@ -9,5 +9,5 @@ predict_router = APIRouter()
 async def predict_product(request: PredictRequest):
     product = await PredictService().predict(request.imageBase64)
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(status_code=400, detail="Product not found")
     return product
